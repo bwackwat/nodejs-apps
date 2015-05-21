@@ -1,0 +1,12 @@
+1. prettify homepage
+2. create content server
+	hook it up woth mongo for auth
+3. prettify blog
+	hook it up with mongo for posts
+	blog !!
+4. add apps loke chat, silly rpgs, profile to content server
+5. use github.
+6. use docker containers?
+7. setup SSL certs!!!
+8. always use HTTPS and WSS
+9. create products make money

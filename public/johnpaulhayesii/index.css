@@ -1,0 +1,22 @@
+h1 {
+	font-family: Arial;
+	color: white;
+	
+}
+
+#banner {
+	height: 40px;
+	background-color: #dc143c;
+	font-family: Arial;
+	line-height: 40px;
+	color: white;
+	font-size: 30;
+}
+
+#subbanner {
+	margin-left: 20px;
+}
+
+body {
+	margin: 0;
+}
