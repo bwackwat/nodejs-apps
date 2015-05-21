@@ -1,13 +1,14 @@
 var model = require("./public/websocket-test/model.js");
-var ws = require("nodejs-websocket");
-//var util = require("util");
+var ws = require("ws").Server;
 
 var state = new Object();
 var nextPlayerId = 0;
 
 var playerControls = new Object();
 
-var server = ws.createServer(function(conn)
+var server = new ws({port: model.PORT});
+
+server.on("connection", function(conn)
 {
 	var localId = nextPlayerId;
 	nextPlayerId++;
@@ -22,10 +23,7 @@ var server = ws.createServer(function(conn)
 	playerControls[localId] = new Object();
 	playerControls[localId][model.ID] = localId;
 
-	//console.log("New connection: " + JSON.stringify(util.inspect(conn)));
-	//console.log("New player connection: " + localId);
-
-	conn.on("text", function(str)
+	conn.on("message", function(str)
 	{
 		action = JSON.parse(str);
 		switch(action[model.ACTION])
@@ -59,8 +57,6 @@ var server = ws.createServer(function(conn)
 		delete playerControls[localId];
 	});
 });
-
-server.listen(model.PORT);
 
 function broadcastState()
 {
@@ -107,9 +103,12 @@ function broadcastState()
 		}
 	}
 
-	server.connections.forEach(function(conn)
+	server.clients.forEach(function(conn)
 	{
-		conn.sendText(JSON.stringify(state));
+		if(conn.readyState == 1)
+		{
+			conn.send(JSON.stringify(state));
+		}
 	});
 }
 

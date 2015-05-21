@@ -1,9 +1,11 @@
 var model = require("./public/drawingboard/model.js");
-var ws = require("nodejs-websocket");
+var ws = require("ws").Server;
 
 var imageData = new Uint8ClampedArray(400 * 200 * 4);
 
-var server = ws.createServer(function(conn)
+var server = new ws({port: model.PORT});
+
+server.on("connection", function(conn)
 {
 	var index;
 	conn.on("text", function(str)
@@ -26,13 +28,11 @@ var server = ws.createServer(function(conn)
 	});
 });
 
-server.listen(model.PORT);
-
 function broadcastPixels()
 {
-	server.connections.forEach(function(conn)
+	server.clients.forEach(function(conn)
 	{
-		conn.sendText(JSON.stringify(imageData));
+		conn.send(JSON.stringify(imageData));
 	});
 }
 

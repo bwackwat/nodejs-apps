@@ -1,30 +1,24 @@
 var model = require("./public/websocket-chat/model.js");
-var ws = require("nodejs-websocket");
+var ws = require("ws").Server;
 //var util = require("util");
 
-var state = new Object();
-var nextPlayerId = 0;
+var server = new ws({port: model.PORT});
 
-var playerControls = new Object();
-
-var server = ws.createServer(function(conn)
+server.on("connection", function(conn)
 {
 	//console.log("New connection: " + JSON.stringify(util.inspect(conn)));
 
-	conn.on("text", function(str)
+	conn.on("message", function(str)
 	{
 		broadcastMessage(str);
-		action = JSON.parse(str);
 	});
 });
 
-server.listen(model.PORT);
-
 function broadcastMessage(msg)
 {
-	server.connections.forEach(function(conn)
+	server.clients.forEach(function(conn)
 	{
-		conn.sendText(msg);
+		conn.send(msg);
 	});
 }
 

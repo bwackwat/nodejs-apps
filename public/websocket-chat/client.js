@@ -8,7 +8,7 @@ function receivedServerMessage(e)
 	chat.value = newmessage[model.ALIAS] + ": " + newmessage[model.MESSAGE] + "\n" + chat.value;
 }
 
-var ws = new WebSocket("ws://" + model.HOST + ":" + model.PORT + "/");
+var ws = new WebSocket("ws://" + window.location.hostname + ":" + model.PORT + "/");
 ws.onmessage = receivedServerMessage;
 
 window.onbeforeunload = function()
@@ -22,5 +22,18 @@ function submitMessage()
 	sendmessage[model.ALIAS] = alias.value;
 	sendmessage[model.MESSAGE] = message.value;
 
+	message.value = "";
+	message.focus();
+
 	ws.send(JSON.stringify(sendmessage));
 }
+
+message.focus();
+
+message.addEventListener("keydown", function(e)
+{
+	if(e.keyCode == 13)
+	{
+		submitMessage();
+	}
+});

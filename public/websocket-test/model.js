@@ -4,7 +4,6 @@ if(typeof exports === 'undefined')
 }
 
 exports.PORT = 8001;
-exports.HOST = "104.236.166.13";
 
 exports.ID = "ID";
 
