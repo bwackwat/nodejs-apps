@@ -27,4 +27,5 @@ function initializeApp(appName)
 initializeApp("web-server");
 initializeApp("websocket-test-server");
 initializeApp("websocket-chat-server");
+initializeApp("websocket-content-server");
 initializeApp("drawingboard-server");

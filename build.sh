@@ -6,6 +6,6 @@ killall node
 
 node /opt/apps/app-initializer.js &
 
-sleep 1
+sleep 3
 clear
 ls
