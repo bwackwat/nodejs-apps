@@ -28,7 +28,7 @@ function serveStaticIndex(response)
 	{
 		for(var appDir in appsAsDirs)
 		{
-			response.write("<a href=" + appsAsDirs[appDir] + "><h2>" + appsAsDirs[appDir] + "</h2></a>");	
+			response.write("<a href=http://www.bwackwat.com/" + appsAsDirs[appDir] + "><h2>" + appsAsDirs[appDir] + "</h2></a>");	
 		}
 	}
 	response.write("</body>");
@@ -41,16 +41,16 @@ require('http').createServer(function(request, response)
 	{
 		public.serve(request, response, function(err, result)
 		{
-			fs.writeFile("lastRequest.txt", util.inspect(request), function(err)
+			/*fs.writeFile("lastRequest.txt", util.inspect(request), function(err)
 			{
 				if(err)
 				{
 					throw err;
 				}
-			});
+			});*/
 			if(err)
 			{
-				response.writeHead(err.status, err.headers);
+				response.setHeader("Status", 200);
 
 				serveStaticIndex(response);
 

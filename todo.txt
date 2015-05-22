@@ -1,4 +1,5 @@
-1. prettify homepage
+<pre>
+1. 
 2. create content server
 	hook it up woth mongo for auth
 3. prettify blog
@@ -10,3 +11,4 @@
 7. setup SSL certs!!!
 8. always use HTTPS and WSS
 9. create products make money
+</pre>

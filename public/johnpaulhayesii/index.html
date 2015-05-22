@@ -2,13 +2,29 @@
 	<head>
 		<title>Portfolio</title>
 		<link rel="shortcut icon" type="image/x-icon" href="favicon.ico"/>
+
+		<script type="text/javascript">
+		function setContent(file)
+		{
+			document.getElementById("content").data = file;
+		}
+		</script>
+
+		<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Vollkorn">
 		<link rel="stylesheet" type="text/css" href="index.css">
 	</head>
 	<body>
 		<div id="banner">
-			<img src="favicon.ico"/><div id="subbanner">John Paul Hayes II</div>
+			<div id="bannerleft">
+				<div id="icon"><img src="favicon.ico"/></div>
+				<div id="name"><a href="#" id="namelink" onclick="setContent('home.html');">John Paul Hayes II</a></div>
+				<div id="links">
+					<a href="#" onclick="setContent('portfolio.html');">Portfolio</a>
+					<a href="#" onclick="setContent('software.html');">Software</a>
+					<a href="#" onclick="setContent('rockclimbing.html');">Rocks</a>
+				</div>
+			</div>
 		</div>
-		<h1>John Paul Hayes II</h1>
-		<h2>Welcome to my portfolio!</h2>
+		<object id="content" type="text/html" data="home.html"></object>
 	</body>
 </html>
