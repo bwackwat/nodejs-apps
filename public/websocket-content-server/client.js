@@ -4,7 +4,7 @@ var action;
 
 function connectedToServer()
 {
-	//Connected
+	goto("login.html");
 }
 
 function receivedServerMessage(e)
@@ -57,5 +57,14 @@ function goto(place)
 	action = new Object();
 	action[model.ACTION] = model.REQUEST_PLACE;
 	action[model.PLACE] = place;
+	ws.send(JSON.stringify(action));
+}
+
+function submitPost()
+{
+	action = new Object();
+	action[model.ACTION] = model.NEW_POST;
+	action[model.TITLE] = document.getElementById("title").value;
+	action[model.TEXT] = document.getElementById("blog").value;
 	ws.send(JSON.stringify(action));
 }

@@ -22,16 +22,10 @@ var server = new ws({port: model.PORT});
 
 server.on("connection", function(conn)
 {
-	var localId = nextClientId;
-	nextClientId++;
-
-	clientStates[localId] = new Object();
-
+	var action;
 	var responseAction;
-	var action = new Object();
-	action[model.ACTION] = model.UPDATE_VIEW;
-	action[model.VIEW_DATA] = fs.readFileSync("public/websocket-content-server/login.html", "utf-8");
-	conn.send(JSON.stringify(action));
+
+	var loggedInUser;
 
 	conn.on("message", function(str)
 	{
@@ -55,7 +49,17 @@ server.on("connection", function(conn)
 						if(err){throw err;}
 						if(res)
 						{
-							console.log(user.username + " has successfully logged in !");
+							loggedInUser = user.username;
+							responseAction = new Object();
+							responseAction[model.ACTION] = model.UPDATE_VIEW;
+							if(user.username == "bwackwat")
+							{
+								responseAction[model.VIEW_DATA] = fs.readFileSync("public/websocket-content-server/admin.html", "utf-8");
+							}else{
+								responseAction[model.VIEW_DATA] = fs.readFileSync("public/websocket-content-server/user.html", "utf-8");
+							}
+							conn.send(JSON.stringify(responseAction));
+							return;
 						}else
 						{
 							responseAction = new Object();
@@ -104,12 +108,30 @@ server.on("connection", function(conn)
 							newuser.save(function(err, newuser)
 							{
 								if(err){throw err;}
-								//Registered the user.
+								responseAction = new Object();
+								responseAction[model.ACTION] = model.RESULT;
+								responseAction[model.RESULT_DATA] = "Registration successful!";
+								conn.send(JSON.stringify(responseAction));
+								return;
 							});
 						});
 					});
 				});
 				break;
+			case model.NEW_POST:
+				if(loggedInUser != "bwackwat")
+				{
+					responseAction = new Object();
+					responseAction[model.ACTION] = model.RESULT;
+					responseAction[model.RESULT_DATA] = "You aren't the admin!";
+					conn.send(JSON.stringify(responseAction));
+					return;
+				}
+				var now = new Date();
+				var newposthtml = "<div id='title'>" + action[model.TITLE] + "</div><br>";
+				newposthtml += "<div id='date'>" + now.toString() + "</div><br>";
+				newposthtml += "<div id='text'>" + action[model.TEXT] + "</div>";
+				//TODO
 			deafult:
 				console.log("Encountered unknown action: " + action);
 				break;

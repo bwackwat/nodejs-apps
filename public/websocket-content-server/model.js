@@ -18,6 +18,10 @@ exports.VIEW_DATA = "VIEW_DATA";
 exports.REQUEST_PLACE = "REQUEST_PLACE";
 exports.PLACE = "PLACE";
 
+exports.NEW_POST = "NEW_POST";
+exports.TITLE = "TITLE";
+exports.TEXT = "TEXT";
+
 exports.RESULT = "RESULT";
 exports.RESULT_DATA = "RESULT_DATA";
 

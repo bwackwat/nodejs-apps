@@ -1,0 +1,25 @@
+html {
+	font-family: "Open Sans";
+}
+
+body {
+	margin: 0;
+	color: white;
+	background-color: seagreen;
+}
+
+#banner {
+	background-color: black;
+}
+
+#title
+{
+	text-align: center;
+	font-size: 40;
+	font-weight: bold;
+}
+
+#defs
+{
+	font-size: 10;
+}
