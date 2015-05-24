@@ -7,3 +7,4 @@ use docker containers?
 setup SSL certs!!!
 always use HTTPS and WSS
 create products make money
+eagles of death metal - heart on

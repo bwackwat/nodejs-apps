@@ -14,11 +14,25 @@ var userModel = new mongoose.Schema({
 	password: {type: String, required: true}
 });
 var User = mongoose.model("User", userModel);
+var postModel = new mongoose.Schema({
+	title: {type: String, required: true},
+	createdOn: {type: String, required: true},
+	text: {type: String, required: true}
+});
+var Post = mongoose.model("Post", postModel);
 
 var clientStates = new Object();
 var nextClientId = 0;
 
 var server = new ws({port: model.PORT});
+
+function sendPacket(connection)
+{
+	var action = new Object();
+	action[model.ACTION] = model.RESULT;
+	action[model.RESULT_DATA] = "That user doesn't exist.";
+	connection.send(JSON.stringify(action));
+}
 
 server.on("connection", function(conn)
 {
@@ -131,7 +145,21 @@ server.on("connection", function(conn)
 				var newposthtml = "<div id='title'>" + action[model.TITLE] + "</div><br>";
 				newposthtml += "<div id='date'>" + now.toString() + "</div><br>";
 				newposthtml += "<div id='text'>" + action[model.TEXT] + "</div>";
-				//TODO
+				var newpost = new Post({
+					title: action[model.TITLE],
+					createdOn: now,
+					text: action[model.TEXT]
+				});
+				newpost.save(function(err, newpost)
+				{
+					if(err){throw err;}
+					responseAction = new Object();
+					responseAction[model.ACTION] = model.RESULT;
+					responseAction[model.RESULT_DATA] = "Post successful!";
+					conn.send(JSON.stringify(responseAction));
+					return;
+				});
+				break;
 			deafult:
 				console.log("Encountered unknown action: " + action);
 				break;
