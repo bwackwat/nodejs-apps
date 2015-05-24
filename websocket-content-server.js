@@ -16,7 +16,7 @@ var userModel = new mongoose.Schema({
 var User = mongoose.model("User", userModel);
 var postModel = new mongoose.Schema({
 	title: {type: String, required: true},
-	createdOn: {type: String, required: true},
+	createdOn: {type: Date, required: true},
 	text: {type: String, required: true}
 });
 var Post = mongoose.model("Post", postModel);
@@ -157,6 +157,13 @@ server.on("connection", function(conn)
 					responseAction[model.ACTION] = model.RESULT;
 					responseAction[model.RESULT_DATA] = "Post successful!";
 					conn.send(JSON.stringify(responseAction));
+					//START COMPILE 10 BLOG POSTS ROUTINE
+					var allposts = Post.find({}).sort({createdOn: -1}).exec(function(err, docs)
+					{
+						if(err){throw err;}
+						console.log(docs);
+					});
+					//END
 					return;
 				});
 				break;

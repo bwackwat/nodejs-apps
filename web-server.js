@@ -17,7 +17,7 @@ function serveStaticIndex(response)
 	response.write("<html>");
 	response.write("<head>");
 	response.write("<title>Static Index</title>");
-	response.write("<link rel='shortcut icon' type='image/x-icon' href='icons/favicon.png'/>");
+	response.write("<link rel='shortcut icon' type='image/x-icon' href='icons/favicon.ico'/>");
 	response.write("</head>");
 	response.write("<body>");
 	response.write("<h1>You stumbled upon a nice, simple, static index.</h1>");
