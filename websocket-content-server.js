@@ -142,9 +142,6 @@ server.on("connection", function(conn)
 					return;
 				}
 				var now = new Date();
-				var newposthtml = "<div id='title'>" + action[model.TITLE] + "</div><br>";
-				newposthtml += "<div id='date'>" + now.toString() + "</div><br>";
-				newposthtml += "<div id='text'>" + action[model.TEXT] + "</div>";
 				var newpost = new Post({
 					title: action[model.TITLE],
 					createdOn: now,
@@ -155,15 +152,31 @@ server.on("connection", function(conn)
 					if(err){throw err;}
 					responseAction = new Object();
 					responseAction[model.ACTION] = model.RESULT;
-					responseAction[model.RESULT_DATA] = "Post successful!";
+					responseAction[model.RESULT_DATA] = "Post successful... ";
 					conn.send(JSON.stringify(responseAction));
-					//START COMPILE 10 BLOG POSTS ROUTINE
 					var allposts = Post.find({}).sort({createdOn: -1}).exec(function(err, docs)
 					{
 						if(err){throw err;}
-						console.log(docs);
+						var postshtml = "<div id='posts'>";
+						docs.forEach(function(doc)
+						{
+							postshtml += "<div id='post'>";
+							postshtml += "<div id='posttitle'>" + doc.title + "</div>";
+							postshtml += "<div id='postdate'>" + doc.createdOn.toString() + "</div><br>";
+							postshtml += "<div id='posttext'>" + doc.text + "</div>";
+							postshtml += "</div>";
+							postshtml += "<hr>";
+						});
+						postshtml += "</div>";
+						fs.writeFile("/opt/apps/public/grokkingequanimity/posts.html", postshtml, function(err)
+						{
+							if(err){throw err;}
+							responseAction = new Object();
+							responseAction[model.ACTION] = model.RESULT;
+							responseAction[model.RESULT_DATA] = "Post successful... posts.html compiled!";
+							conn.send(JSON.stringify(responseAction));
+						});
 					});
-					//END
 					return;
 				});
 				break;

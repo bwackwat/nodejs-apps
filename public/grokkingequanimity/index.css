@@ -12,14 +12,28 @@ body {
 	background-color: black;
 }
 
-#title
-{
+#title {
 	text-align: center;
 	font-size: 40;
 	font-weight: bold;
 }
 
-#defs
-{
+#defs {
 	font-size: 10;
+}
+
+#content {
+	margin: 50px;
+}
+
+#posttitle {
+	font-size: 20;
+}
+
+#postdate {
+	font-size: 14;
+}
+
+#posttext {
+	font-size: 14;
 }

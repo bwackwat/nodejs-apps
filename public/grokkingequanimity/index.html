@@ -13,5 +13,16 @@
 				equanimity - mental calmness, composure, and evenness of temper, especially in a difficult situation
 			</div>
 		</div>
+		<div id="content"></div>
 	</body>
+	<script type="text/javascript">
+	function setContent(file)
+	{
+		var xmlHttp = new XMLHttpRequest();
+		xmlHttp.open("GET", file, false);
+		xmlHttp.send(null);
+		document.getElementById("content").innerHTML = xmlHttp.responseText;
+	}
+	setContent("posts.html");
+	</script>
 </html>
