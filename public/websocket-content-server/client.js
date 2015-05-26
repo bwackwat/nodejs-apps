@@ -2,21 +2,21 @@ var content = document.getElementById("content");
 
 var action;
 
-function connectedToServer()
+function connected()
 {
 	goto("login.html");
 }
 
-function receivedServerMessage(e)
+function receivedPacket(e)
 {
 	action = JSON.parse(e.data);
-	switch(action[model.ACTION])
+	switch(action.type)
 	{
 		case model.UPDATE_VIEW:
-			content.innerHTML = action[model.VIEW_DATA];
+			content.innerHTML = action.data;
 			break;
 		case model.RESULT:
-			document.getElementById("result").innerHTML = action[model.RESULT_DATA];
+			document.getElementById("result").innerHTML = action.data;
 			break;
 		default:
 			alert("??: " + action);
@@ -24,47 +24,39 @@ function receivedServerMessage(e)
 	}
 }
 
-function serverConnectionClosed()
+function connectionClosed()
 {
 	//Closed connection :O
 }
 
 var ws = new WebSocket("ws://" + window.location.hostname + ":" + model.PORT + "/");
-ws.onopen = connectedToServer;
-ws.onmessage = receivedServerMessage;
-ws.onclose - serverConnectionClosed;
+ws.onopen = connected;
+ws.onmessage = receivedPacket;
+ws.onclose - connectionClosed;
 
 function authenticate()
 {
-	action = new Object();
-	action[model.ACTION] = model.AUTHENTICATE;
-	action[model.USERNAME] = document.getElementById("username").value;
-	action[model.PASSWORD] = document.getElementById("password").value;
-	ws.send(JSON.stringify(action));
+	ws.send(JSON.stringify({type: model.AUTHENTICATE,
+		username: document.getElementById("username").value,
+		password: document.getElementById("password").value}));
 }
 
 function register()
 {
-	action = new Object();
-	action[model.ACTION] = model.REGISTER;
-	action[model.USERNAME] = document.getElementById("username").value;
-	action[model.PASSWORD] = document.getElementById("password").value;
-	ws.send(JSON.stringify(action));
+	ws.send(JSON.stringify({type: model.REGISTER,
+		username: document.getElementById("username").value,
+		password: document.getElementById("password").value}));
 }
 
 function goto(place)
 {
-	action = new Object();
-	action[model.ACTION] = model.REQUEST_PLACE;
-	action[model.PLACE] = place;
-	ws.send(JSON.stringify(action));
+	ws.send(JSON.stringify({type: model.GOTO,
+		place: place}));
 }
 
 function submitPost()
 {
-	action = new Object();
-	action[model.ACTION] = model.NEW_POST;
-	action[model.TITLE] = document.getElementById("title").value;
-	action[model.TEXT] = document.getElementById("blog").value;
-	ws.send(JSON.stringify(action));
+	ws.send(JSON.stringify({type: model.POST,
+		title: document.getElementById("title").value,
+		text: document.getElementById("blog").value}));
 }

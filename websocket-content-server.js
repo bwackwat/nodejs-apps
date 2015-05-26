@@ -1,38 +1,14 @@
 var model = require("./public/websocket-content-server/model.js");
 var fs = require("fs");
 var ws = require("ws").Server;
-var mongoose = require("mongoose");
+var mongojs = require("mongojs");
 var bcrypt = require("bcrypt");
 
-mongoose.connect("mongodb://localhost/content_server", function(err)
-{
-	if(err){throw err;}
-	console.log("Connected to DB");
-});
-var userModel = new mongoose.Schema({
-	username: {type: String, required: true},
-	password: {type: String, required: true}
-});
-var User = mongoose.model("User", userModel);
-var postModel = new mongoose.Schema({
-	title: {type: String, required: true},
-	createdOn: {type: Date, required: true},
-	text: {type: String, required: true}
-});
-var Post = mongoose.model("Post", postModel);
-
-var clientStates = new Object();
-var nextClientId = 0;
+var db = mongojs("content_server", ["users", "posts"]);
+var userCollection = db.collection("users");
+var postCollection = db.collection("posts");
 
 var server = new ws({port: model.PORT});
-
-function sendPacket(connection)
-{
-	var action = new Object();
-	action[model.ACTION] = model.RESULT;
-	action[model.RESULT_DATA] = "That user doesn't exist.";
-	connection.send(JSON.stringify(action));
-}
 
 server.on("connection", function(conn)
 {
@@ -44,140 +20,121 @@ server.on("connection", function(conn)
 	conn.on("message", function(str)
 	{
 		action = JSON.parse(str);
-		switch(action[model.ACTION])
+		switch(action.type)
 		{
 			case model.AUTHENTICATE:
-				User.where({username: action[model.USERNAME]}).findOne(function(err, user)
+				userCollection.findOne({username: action.username}, function(err, user)
 				{
 					if(err){throw err;}
 					if(user == null)
 					{
-						responseAction = new Object();
-						responseAction[model.ACTION] = model.RESULT;
-						responseAction[model.RESULT_DATA] = "That user doesn't exist.";
-						conn.send(JSON.stringify(responseAction));
+						conn.send(JSON.stringify({type: model.RESULT,
+							data: "That user doesn't exist."}));
 						return;
-					}
-					bcrypt.compare(action[model.PASSWORD], user.password, function(err, res)
+					}else
 					{
-						if(err){throw err;}
-						if(res)
+						bcrypt.compare(action.password, user.password, function(err, res)
 						{
-							loggedInUser = user.username;
-							responseAction = new Object();
-							responseAction[model.ACTION] = model.UPDATE_VIEW;
-							if(user.username == "bwackwat")
+							if(err){throw err;}
+							if(res)
 							{
-								responseAction[model.VIEW_DATA] = fs.readFileSync("public/websocket-content-server/admin.html", "utf-8");
-							}else{
-								responseAction[model.VIEW_DATA] = fs.readFileSync("public/websocket-content-server/user.html", "utf-8");
+								loggedInUser = user.username;
+	
+								var viewData;
+								if(user.username == "bwackwat")
+								{
+									viewData = fs.readFileSync("public/websocket-content-server/admin.html", "utf-8");
+								}else
+								{
+									viewData = fs.readFileSync("public/websocket-content-server/user.html", "utf-8");
+								}
+								conn.send(JSON.stringify({type: model.UPDATE_VIEW,
+									data: viewData}));
+							}else
+							{
+								conn.send(JSON.stringify({type: model.RESULT,
+									data: "Invalid password."}));
 							}
-							conn.send(JSON.stringify(responseAction));
-							return;
-						}else
-						{
-							responseAction = new Object();
-							responseAction[model.ACTION] = model.RESULT;
-							responseAction[model.RESULT_DATA] = "Invalid password.";
-							conn.send(JSON.stringify(responseAction));
-							return;
-						}
-					});
+						});
+					}
 				});
 				break;
-			case model.REQUEST_PLACE:
-				responseAction = new Object();
-				responseAction[model.ACTION] = model.UPDATE_VIEW;
-				responseAction[model.VIEW_DATA] = fs.readFileSync("public/websocket-content-server/" + action[model.PLACE], "utf-8");
-				conn.send(JSON.stringify(responseAction));
+			case model.GOTO:
+				conn.send(JSON.stringify({type: model.UPDATE_VIEW,
+					data: fs.readFileSync("public/websocket-content-server/" + action.place, "utf-8")}));
 				break;
 			case model.REGISTER:
-				User.where({username: action[model.USERNAME]}).findOne(function(err, user)
+				userCollection.findOne({username: action.username}, function(err, user)
 				{
 					if(err){throw err;}
 					if(user != null)
 					{
-						responseAction = new Object();
-						responseAction[model.ACTION] = model.RESULT;
-						responseAction[model.RESULT_DATA] = "That user already exists.";
-						conn.send(JSON.stringify(responseAction));
+						conn.send(JSON.stringify({type: model.RESULT,
+							data: "That user already exists."}));
 						return;
 					}
-					if(action[model.PASSWORD].length < 6)
+					if(action.password.length < 6)
 					{
-						responseAction = new Object();
-						responseAction[model.ACTION] = model.RESULT;
-						responseAction[model.RESULT_DATA] = "A password must have atleast 6 characters.";
-						conn.send(JSON.stringify(responseAction));
+						conn.send(JSON.stringify({type: model.RESULT,
+							data: "A password must have atleast 6 characters."}));
 						return;
 					}
 					bcrypt.genSalt(10, function(err, salt)
 					{
-						bcrypt.hash(action[model.PASSWORD], salt, function(err, hash)
+						bcrypt.hash(action.password, salt, function(err, hash)
 						{
-							var newuser = new User({
-								username: action[model.USERNAME],
+							userCollection.insert({
+								username: action.username,
 								password: hash
-							});
-							newuser.save(function(err, newuser)
+							}, function(err, newuser)
 							{
 								if(err){throw err;}
-								responseAction = new Object();
-								responseAction[model.ACTION] = model.RESULT;
-								responseAction[model.RESULT_DATA] = "Registration successful!";
-								conn.send(JSON.stringify(responseAction));
-								return;
+								conn.send(JSON.stringify({type: model.RESULT,
+									data: "Registration successful!"}));
 							});
 						});
 					});
 				});
 				break;
-			case model.NEW_POST:
+			case model.POST:
 				if(loggedInUser != "bwackwat")
 				{
-					responseAction = new Object();
-					responseAction[model.ACTION] = model.RESULT;
-					responseAction[model.RESULT_DATA] = "You aren't the admin!";
-					conn.send(JSON.stringify(responseAction));
+					conn.send(JSON.stringify({type: model.RESULT,
+						data: "You aren't the admin!"}));
 					return;
 				}
 				var now = new Date();
-				var newpost = new Post({
-					title: action[model.TITLE],
+				postCollection.insert({
+					title: action.title,
 					createdOn: now,
-					text: action[model.TEXT]
-				});
-				newpost.save(function(err, newpost)
+					text: action.text
+				}, function(err, newpost)
 				{
 					if(err){throw err;}
-					responseAction = new Object();
-					responseAction[model.ACTION] = model.RESULT;
-					responseAction[model.RESULT_DATA] = "Post successful... ";
-					conn.send(JSON.stringify(responseAction));
-					var allposts = Post.find({}).sort({createdOn: -1}).exec(function(err, docs)
+					conn.send(JSON.stringify({type: model.RESULT,
+						data: "Post successful..."}));
+
+					postCollection.find().sort({createdOn: -1}, function(err, posts)
 					{
 						if(err){throw err;}
 						var postshtml = "<div id='posts'>";
-						docs.forEach(function(doc)
+						for(var i = 0, len = posts.length; i < len; i++)
 						{
 							postshtml += "<div id='post'>";
-							postshtml += "<div id='posttitle'>" + doc.title + "</div>";
-							postshtml += "<div id='postdate'>" + doc.createdOn.toString() + "</div><br>";
-							postshtml += "<div id='posttext'>" + doc.text + "</div>";
+							postshtml += "<div id='posttitle'>" + posts[i].title + "</div>";
+							postshtml += "<div id='postdate'>" + posts[i].createdOn.toString() + "</div><br>";
+							postshtml += "<div id='posttext'>" + posts[i].text + "</div>";
 							postshtml += "</div>";
 							postshtml += "<hr>";
-						});
+						}
 						postshtml += "</div>";
 						fs.writeFile("/opt/apps/public/grokkingequanimity/posts.html", postshtml, function(err)
 						{
 							if(err){throw err;}
-							responseAction = new Object();
-							responseAction[model.ACTION] = model.RESULT;
-							responseAction[model.RESULT_DATA] = "Post successful... posts.html compiled!";
-							conn.send(JSON.stringify(responseAction));
+							conn.send(JSON.stringify({type: model.RESULT,
+								data: "Post successful... posts.html compiled!"}));
 						});
 					});
-					return;
 				});
 				break;
 			deafult:

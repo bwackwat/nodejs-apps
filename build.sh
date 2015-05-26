@@ -4,7 +4,9 @@ killall node
 
 # build stuff
 
-node /opt/apps/app-initializer.js &
+node /opt/apps/build-apps.js
+
+node /opt/apps/run-apps.js &
 
 sleep 3
 #clear
