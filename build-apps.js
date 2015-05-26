@@ -16,14 +16,10 @@ fs.readdir(PUBLIC, function(err, files)
 	indexhtml += "<h2>Feel free to explore.</h3>";
 	files.forEach(function(file)
 	{
-		fs.stat(PUBLIC + file, function(err, stat)
+		if(fs.statSync(PUBLIC + file).isDirectory())
 		{
-			if(err){throw err;}
-			if(stat && stat.isDirectory())
-			{
-				indexhtml += "<a href='http://www.bwackwat.com/" + files[file] + "'><h3>" + files[file] + "</h3></a>";	
-			}
-		});
+			indexhtml += "<a href='http://www.bwackwat.com/" + file + "'><h3>" + file + "</h3></a>";	
+		}
 	});
 	indexhtml += "<img src='images/blackrat.svg' height='200'/>";
 	indexhtml += "</body>";

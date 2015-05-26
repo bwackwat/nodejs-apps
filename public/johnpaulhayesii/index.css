@@ -49,8 +49,13 @@ a {
 	font-size: 25;
 }
 
-#content {
-	width: 100%;
+#contentborder {
 	height 100%;
-	margin: 40px;
+	margin: 20px;
+	border: 2px #dc143c solid;
+}
+
+#content {
+	height 100%;
+	margin: 20px;
 }

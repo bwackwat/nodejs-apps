@@ -1,0 +1,15 @@
+get free ssh cert, implement it
+	implement secure web sockets and https everywhere because why not
+add climbing log
+add software log
+	add links to sites like contact, about, github, linkedin, etc
+finish the drawingboard app
+improve content server usability
+	edit posts
+	more, sensible links
+investigate DDOS protection
+try to hack the system
+	cross-site scripting
+	packet sniffing
+beautify grokking equanimity
+use emoji font for a frogger style game
