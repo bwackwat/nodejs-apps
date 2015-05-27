@@ -23,7 +23,14 @@ body {
 }
 
 #content {
-	margin: 50px;
+	text-align: center;
+	margin-top: 50px;
+}
+
+#posts {
+	display: inline-block;
+	width: 70%;
+	text-align: justify;
 }
 
 #posttitle {
