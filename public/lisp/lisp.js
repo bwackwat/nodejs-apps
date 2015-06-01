@@ -109,7 +109,7 @@ function evaluate_some_lisp(lisp)
 		}
 	}
 
-	console.log("Eval " + lisp[0]);
+	//console.log("Eval " + lisp[0]);
 	var eval = lisp[0];
 	delete lisp[0];
 

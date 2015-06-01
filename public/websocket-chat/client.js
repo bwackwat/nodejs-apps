@@ -8,7 +8,7 @@ function receivedServerMessage(e)
 	chat.value = newmessage[model.ALIAS] + ": " + newmessage[model.MESSAGE] + "\n" + chat.value;
 }
 
-var ws = new WebSocket("ws://" + window.location.hostname + ":" + model.PORT + "/");
+var ws = new WebSocket("wss://" + window.location.hostname + ":" + model.PORT + "/");
 ws.onmessage = receivedServerMessage;
 
 window.onbeforeunload = function()

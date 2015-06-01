@@ -1,18 +1,29 @@
 var model = require("./public/drawingboard/model.js");
+var fs = require("fs");
 var ws = require("ws").Server;
 
 var imageData = new Uint8ClampedArray(400 * 200 * 4);
 
-var server = new ws({port: model.PORT});
+var options = {	
+	key: fs.readFileSync("/opt/ssl/ssl.key", "utf-8", function(err, data){if(err)throw err;}),
+	cert: fs.readFileSync("/opt/ssl/ssl.crt", "utf-8", function(err, data){if(err)throw err;}),
+	passphrase: fs.readFileSync("/opt/ssl/password.txt", "utf-8", function(err, data){if(err)throw err;})
+};
 
-server.on("connection", function(conn)
-{
+function onConnection(req, res){
+	res.writeHead(200);
+	res.end("All glory to WebSockets!\n");
+}
+
+var app = require('https').createServer(options, onConnection).listen(model.PORT);
+
+var wss = new ws({server: app});
+
+wss.on("connection", function(conn){
 	var index;
-	conn.on("text", function(str)
-	{
+	conn.on("text", function(str){
 		action = JSON.parse(str);
-		switch(action[model.ACTION])
-		{
+		switch(action[model.ACTION]){
 			case model.DRAW_PIXEL:
 				index = (action[model.PIXEL]['x'] + action[model.PIXEL]['y'] * 400) * 4;
 
@@ -28,10 +39,8 @@ server.on("connection", function(conn)
 	});
 });
 
-function broadcastPixels()
-{
-	server.clients.forEach(function(conn)
-	{
+function broadcastPixels(){
+	wss.clients.forEach(function(conn){
 		conn.send(JSON.stringify(imageData));
 	});
 }

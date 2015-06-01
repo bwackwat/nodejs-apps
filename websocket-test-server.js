@@ -1,4 +1,5 @@
 var model = require("./public/websocket-test/model.js");
+var fs = require("fs");
 var ws = require("ws").Server;
 
 var state = new Object();
@@ -6,9 +7,22 @@ var nextPlayerId = 0;
 
 var playerControls = new Object();
 
-var server = new ws({port: model.PORT});
+var options = {	
+	key: fs.readFileSync("/opt/ssl/ssl.key", "utf-8", function(err, data){if(err)throw err;}),
+	cert: fs.readFileSync("/opt/ssl/ssl.crt", "utf-8", function(err, data){if(err)throw err;}),
+	passphrase: fs.readFileSync("/opt/ssl/password.txt", "utf-8", function(err, data){if(err)throw err;})
+};
 
-server.on("connection", function(conn)
+function onConnection(req, res){
+	res.writeHead(200);
+	res.end("All glory to WebSockets!\n");
+}
+
+var app = require('https').createServer(options, onConnection).listen(model.PORT);
+
+var wss = new ws({server: app});
+
+wss.on("connection", function(conn)
 {
 	var localId = nextPlayerId;
 	nextPlayerId++;
@@ -103,7 +117,7 @@ function broadcastState()
 		}
 	}
 
-	server.clients.forEach(function(conn)
+	wss.clients.forEach(function(conn)
 	{
 		if(conn.readyState == 1)
 		{

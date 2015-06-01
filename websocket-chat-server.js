@@ -1,23 +1,30 @@
 var model = require("./public/websocket-chat/model.js");
+var fs = require("fs");
 var ws = require("ws").Server;
-//var util = require("util");
 
-var server = new ws({port: model.PORT});
+var options = {	
+	key: fs.readFileSync("/opt/ssl/ssl.key", "utf-8", function(err, data){if(err)throw err;}),
+	cert: fs.readFileSync("/opt/ssl/ssl.crt", "utf-8", function(err, data){if(err)throw err;}),
+	passphrase: fs.readFileSync("/opt/ssl/password.txt", "utf-8", function(err, data){if(err)throw err;})
+};
 
-server.on("connection", function(conn)
-{
-	//console.log("New connection: " + JSON.stringify(util.inspect(conn)));
+function onConnection(req, res){
+	res.writeHead(200);
+	res.end("All glory to WebSockets!\n");
+}
 
-	conn.on("message", function(str)
-	{
+var app = require('https').createServer(options, onConnection).listen(model.PORT);
+
+var wss = new ws({server: app});
+
+wss.on("connection", function(conn){
+	conn.on("message", function(str){
 		broadcastMessage(str);
 	});
 });
 
-function broadcastMessage(msg)
-{
-	server.clients.forEach(function(conn)
-	{
+function broadcastMessage(msg){
+	wss.clients.forEach(function(conn){
 		conn.send(msg);
 	});
 }

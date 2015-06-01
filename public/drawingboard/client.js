@@ -2,7 +2,7 @@ var canvas = document.getElementById("world");
 var context = canvas.getContext('2d');
 var singleImage = context.createImageData(400, 200);
 
-var ws = new WebSocket("ws://" + window.location.hostname + ":" + model.PORT + "/");
+var ws = new WebSocket("wss://" + window.location.hostname + ":" + model.PORT + "/");
 ws.onmessage = function receivedServerMessage(e)
 {
 	singleImage.data.set(JSON.parse(e.data));

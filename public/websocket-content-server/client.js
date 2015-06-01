@@ -29,7 +29,7 @@ function connectionClosed()
 	//Closed connection :O
 }
 
-var ws = new WebSocket("ws://" + window.location.hostname + ":" + model.PORT + "/");
+var ws = new WebSocket("wss://" + window.location.hostname + ":" + model.PORT + "/");
 ws.onopen = connected;
 ws.onmessage = receivedPacket;
 ws.onclose - connectionClosed;

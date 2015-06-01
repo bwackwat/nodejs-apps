@@ -1,0 +1,41 @@
+html {
+	font-family: "Open Sans";
+}
+
+textarea, input {
+	margin: 10px;
+	height: 40px;
+}
+
+input[type="button"] {
+	border: 1px solid #CCC;
+	padding: 10px 25px 10px 25px;
+	color: #333;
+	border-radius: 4px;
+}
+
+textarea, input[type="text"], input[type="password"] {
+	border: 1px solid #CCC;
+	outline: 0 none;
+	padding: 5px 0px 5px 5px;
+	border-radius: 4px;
+}
+
+#parent-content {
+	text-align: center;
+}
+
+#content {
+	display: inline-block;
+	text-align: justify;
+}
+
+#login {
+	text-align: center;
+}
+
+#blog {
+	width: 70%;
+	height: 70%;
+	width: 1000;
+}
