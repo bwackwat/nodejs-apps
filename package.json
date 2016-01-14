@@ -1,0 +1,38 @@
+{
+  "name": "PrimaryDOApps",
+  "version": "0.5.7",
+  "description": "A blog, a personal site, and a set of apps using NodeJS.",
+  "author": "John Paul Hayes II <john.paul.hayes2.lucid@gmail.com>",
+  "contributors": [
+    {
+      "name": "John Paul Hayes II",
+      "email": "john.paul.hayes2.lucid@gmail.com"
+    }
+  ],
+  "main": "init.js",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/bwackwat/PrimaryDOApps.git"
+  },
+  "keywords": [
+    "personal",
+    "blog",
+    "tech",
+    "climbing",
+    "slacklining",
+    "app"
+  ],
+  "dependencies": {
+    "bcryptjs": "*",
+    "chalk": "*",
+    "jshint": "*",
+    "mongojs": "*",
+    "node-static": "*",
+    "nodemailer": "*",
+    "nodemailer-sendgrid-transport": "*",
+    "random-words": "*",
+    "selenium-webdriver": "*",
+    "ws": "*"
+  },
+  "license": "MIT"
+}

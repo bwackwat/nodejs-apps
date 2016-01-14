@@ -3,55 +3,53 @@ var context = canvas.getContext('2d');
 var singleImage = context.createImageData(400, 200);
 
 var ws = new WebSocket("wss://" + window.location.hostname + ":" + model.PORT + "/");
-ws.onmessage = function receivedServerMessage(e)
-{
-	singleImage.data.set(JSON.parse(e.data));
+ws.binaryType = "arraybuffer";
+
+
+ws.onmessage = function receivedServerMessage(e){
+	var newdata = new Uint8ClampedArray(e.data);
+	singleImage.data = newdata;
 };
 
-window.onbeforeunload = function()
-{
+window.onbeforeunload = function(){
 	ws.close();
 };
 
 var action;
 var mouseDown = false;
 
-var r = 0;
-var g = 0;
-var b = 0;
-var a = 255;
+var red = 0;
+var green = 0;
+var blue = 0;
+var alpha = 255;
 
-canvas.onmousedown = function(e)
-{
+canvas.onmousedown = function(e){
 	mouseDown = true;
 };
 
-canvas.onmousemove = function(e)
-{
-	if(mouseDown)
-	{
-		action = new Object();
-		action[model.ACTION] = model.DRAW_PIXEL;
-
-		action[model.PIXEL] = new Object();
-		action[model.PIXEL]['r'] = r;
-		action[model.PIXEL]['g'] = g;
-		action[model.PIXEL]['b'] = b;
-		action[model.PIXEL]['a'] = a;
-		action[model.PIXEL]['x'] = e.x;
-		action[model.PIXEL]['y'] = e.y;
+canvas.onmousemove = function(e){
+	if(mouseDown)	{
+		action = {
+			type: model.DRAW_PIXEL,
+			pixel: {
+				r: red,
+				g: green,
+				b: blue,
+				a: alpha,
+				x: e.x,
+				y: e.y
+			}
+		};
 
 		ws.send(JSON.stringify(action));
 	}
 };
 
-canvas.onmouseup = function(e)
-{
+canvas.onmouseup = function(e){
 	mouseDown = false;
 };
 
-function repaintCanvas()
-{
+function repaintCanvas(){
 	context.putImageData(singleImage, 0, 0);
 }
 

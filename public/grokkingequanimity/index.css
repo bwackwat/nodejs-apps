@@ -1,11 +1,20 @@
 html {
 	font-family: "Open Sans";
+	min-width: 800px;
 }
 
 body {
 	margin: 0;
 	color: white;
 	background-color: seagreen;
+}
+
+hr {
+	border-color: black;
+	border-style: solid;
+	border-width: 4px;
+	margin-top: 20px;
+	margin-bottom: 20px;
 }
 
 #banner {

@@ -1,0 +1,1 @@
+start mongod --dbpath "E:/MongoDBData/"
